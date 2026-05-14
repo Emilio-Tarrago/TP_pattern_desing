@@ -6,6 +6,7 @@ public class TransportMonitor implements Subject{
     private TransportSnapshot transportSnapshot;
     public TransportMonitor(){
         observers = new ArrayList<>();
+        //transportStrategy = new Bicicleta(5);
         transportSnapshot = new TransportSnapshot();
         setStrategy(new Colectivo(50)); //valor por defecto
     }
@@ -21,6 +22,7 @@ public class TransportMonitor implements Subject{
     public void subcribe(TransportObserver observer) {
         observers.add(observer);
     }
+
     @Override
     public void unsubcribe(TransportObserver observer) {
         int i = observers.indexOf(observer);
@@ -39,7 +41,7 @@ public class TransportMonitor implements Subject{
     public void start(int intervalMs) {
         // recalculo el TransportSnapshot
         recalcular(intervalMs);
-        //update a observers
+        //updateo observers
         for (int i=0; i < observers.size(); i++){
             TransportObserver observer = observers.get(i);
             observer.onUpdate(transportSnapshot);
