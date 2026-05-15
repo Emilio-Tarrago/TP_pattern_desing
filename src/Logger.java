@@ -1,6 +1,5 @@
 import java.sql.Timestamp;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 public class Logger {
     private static Logger instance = null;
@@ -10,10 +9,7 @@ public class Logger {
     public static final String VERDE = "\u001B[32m";
     public static final String GRIS = "\u001B[90m";
     public static final String ROJO = "\u001B[31m";
-    private TimeUnit timestamp;
-    private Logger(){
-        System.out.println("------Iniciando Logger------");
-    }
+    private Logger(){}
     public static Logger getInstance(){
         try {
             semaphore.acquire();
