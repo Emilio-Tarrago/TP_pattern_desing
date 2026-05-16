@@ -1,0 +1,167 @@
+@startuml Diagrama_de_Clase_TP_Pattern_Desing
+
+' --- CONFIGURACIONES VISUALES ---
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing true
+
+' --- INTERFACES ---
+interface Subject {
+    + {abstract} subcribe(observer: TransportObserver): void
+    + {abstract} unsubcribe(observer: TransportObserver): void
+    + {abstract} start(intervalMs: int): void
+}
+
+interface TransportObserver {
+    + {abstract} onUpdate(transportSnapshot: TransportSnapshot): void
+}
+
+interface TransportStrategy {
+    + {abstract} getName(): String
+    + {abstract} getCost(): double
+    + {abstract} getDistance(): double
+    + {abstract} getETA(): int
+}
+
+' --- CLASES ---
+class Main {
+    + {static} main(args: String[]): void
+}
+
+class Logger {
+    - {static} instance: Logger
+    - {static} semaphore: Semaphore
+    + {static} RESET: String
+    + {static} AMARILLO: String
+    + {static} VERDE: String
+    + {static} GRIS: String
+    + {static} ROJO: String
+    - Logger()
+    + {static} getInstance(): Logger
+    + logWarning(msg: String): void
+    + logDebug(msg: String): void
+    + logInfo(msg: String): void
+    + logError(msg: String): void
+    - getTimestamp(): String
+}
+
+class TransportSnapshot {
+    - name: String
+    - cost: double
+    - distance: double
+    - ETA: int
+    + TransportSnapshot()
+    + setCost(cost: double): void
+    + setDistance(distance: double): void
+    + setETA(ETA: int): void
+    + setName(name: String): void
+    + getCost(): double
+    + getDistance(): double
+    + getETA(): int
+    + getName(): String
+}
+
+class TransportMonitor {
+    + observers: ArrayList<TransportObserver>
+    + transportStrategy: TransportStrategy
+    - transportSnapshot: TransportSnapshot
+    + TransportMonitor()
+    + setStrategy(strategy: TransportStrategy): void
+    + subcribe(observer: TransportObserver): void
+    + unsubcribe(observer: TransportObserver): void
+    + recalcular(intervalMs: int): void
+    + start(intervalMs: int): void
+}
+
+class AlertObserver {
+    - logger: Logger
+    - umbralCost: double
+    - umbralETA: int
+    + AlertObserver()
+    + setUmbralCost(umbralCost: double): void
+    + setUmbralETA(umbralETA: int): void
+    + onUpdate(transportSnapshot: TransportSnapshot): void
+}
+
+class ConsolePrinter {
+    - logger: Logger
+    + ConsolePrinter()
+    + onUpdate(transportSnapshot: TransportSnapshot): void
+}
+
+class Bicicleta {
+    - transportSnapshot: TransportSnapshot
+    - costMin: double
+    - costMax: double
+    + Bicicleta(distance: double)
+    + getName(): String
+    + getCost(): double
+    + getDistance(): double
+    + getETA(): int
+}
+
+class Colectivo {
+    - transportSnapshot: TransportSnapshot
+    - costMin: double
+    - costMax: double
+    + Colectivo(distance: double)
+    + getTransportSnapshot(): TransportSnapshot
+    + getName(): String
+    + getCost(): double
+    + getDistance(): double
+    + getETA(): int
+}
+
+class Taxi {
+    - transportSnapshot: TransportSnapshot
+    - costMin: double
+    - costMax: double
+    + Taxi(distance: double)
+    + getName(): String
+    + getCost(): double
+    + getDistance(): double
+    + getETA(): int
+}
+
+' --- RELACIONES Y DEPENDENCIAS ---
+
+' Implementaciones de Interfaces
+TransportMonitor ..|> Subject
+AlertObserver ..|> TransportObserver
+ConsolePrinter ..|> TransportObserver
+Bicicleta ..|> TransportStrategy
+Colectivo ..|> TransportStrategy
+Taxi ..|> TransportStrategy
+
+' Relaciones de Composición / Agregación (Estructura de Patrones)
+TransportMonitor "1" *-- "1" TransportSnapshot : posee >
+TransportMonitor "1" o-- "*" TransportObserver : notifica a >
+TransportMonitor "1" o-- "1" TransportStrategy : utiliza >
+
+' Composiciones internas de las Estrategias
+Bicicleta "1" *-- "1" TransportSnapshot
+Colectivo "1" *-- "1" TransportSnapshot
+Taxi "1" *-- "1" TransportSnapshot
+
+' Uso de Singletons y dependencias con Logger
+AlertObserver "1" --> "1" Logger : usa
+ConsolePrinter "1" --> "1" Logger : usa
+
+' Autorelación de Singleton
+Logger "1" <-- "1" Logger : gestiona única instancia
+
+' Dependencias de paso de parámetros en métodos (Observer)
+TransportObserver ..> TransportSnapshot : recibe
+AlertObserver ..> TransportSnapshot : analiza
+ConsolePrinter ..> TransportSnapshot : imprime
+
+' Dependencias de creación y ejecución (Main)
+Main ..> TransportMonitor : orquesta
+Main ..> ConsolePrinter : crea
+Main ..> AlertObserver : crea
+Main ..> Logger : registra logs iniciales
+Main ..> Taxi : instancia dinámicamente
+Main ..> Colectivo : instancia dinámicamente
+Main ..> Bicicleta : instancia dinámicamente
+
+@enduml
