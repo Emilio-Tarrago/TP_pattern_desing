@@ -17,10 +17,6 @@ public class Colectivo implements TransportStrategy{
         transportSnapshot.setETA(ETA); //ETA en minutos
     }
 
-    public TransportSnapshot getTransportSnapshot() {
-        return transportSnapshot;
-    }
-
     @Override
     public String getName() {
         return transportSnapshot.getName();

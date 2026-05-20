@@ -6,7 +6,6 @@ public class TransportMonitor implements Subject{
     private TransportSnapshot transportSnapshot;
     public TransportMonitor(){
         observers = new ArrayList<>();
-        //transportStrategy = new Bicicleta(5);
         transportSnapshot = new TransportSnapshot();
         setStrategy(new Colectivo(50)); //valor por defecto
     }
